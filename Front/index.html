@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo de Futebol</title>
+  <link rel="icon" type="image/png" href="logofut.png" />
+  <link rel="stylesheet" href="index.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo"><img src="logofut.png" alt="Logo" class="logo-img" /><span>FutCatálogo</span></div>
+      <nav>
+        <a href="index.html" class="ativo">Início</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img src="logofut.png" alt="Logo FutCatálogo" class="hero-logo" />
+  </section>
+
+  <section class="filtros">
+    <input type="text" id="busca" placeholder="Buscar por nome, clube ou país..." />
+    <select id="filtroPosicao">
+      <option value="">Todas as Posições</option>
+      <option value="Goleiro">Goleiro</option>
+      <option value="Zagueiro">Zagueiro</option>
+      <option value="Lateral">Lateral</option>
+      <option value="Volante">Volante</option>
+      <option value="Meia">Meia</option>
+      <option value="Atacante">Atacante</option>
+    </select>
+    <button onclick="carregarJogadores()">Filtrar</button>
+    <button class="btn-tema modo-claro" id="btnTema" onclick="alternarTema()" title="Alternar modo escuro/claro dos cards">🌙 Escuro</button>
+  </section>
+
+  <main id="grid" class="grid">
+    <p class="carregando">Carregando jogadores...</p>
+  </main>
+
+  <footer>
+    <p>FutCatálogo &copy; 2024 — Todos os direitos reservados</p>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>
