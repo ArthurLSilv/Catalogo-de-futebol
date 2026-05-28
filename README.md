@@ -17,7 +17,7 @@ Catálogo de jogadores de futebol com cadastro, listagem, edição e exclusão. 
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/ArthurLSilv/Cat-logo-de-futebol.git
+git clone https://github.com/ArthurLSilv/Catalogo-de-futebol.git
 ```
 
 Coloque a pasta dentro do diretório público do seu servidor:
