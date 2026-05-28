@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Atualizar Jogador</title>
+  <link rel="icon" type="image/png" href="logofut.png" />
+  <link rel="stylesheet" href="index.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo"><img src="logofut.png" alt="Logo" class="logo-img" /><span>FutCatálogo</span></div>
+      <nav>
+        <a href="index.html">Início</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="form-wrapper">
+    <div class="form-card">
+      <h2>Atualizar <span>Jogador</span></h2>
+      <p class="sub">Edite os dados do jogador</p>
+
+      <div id="alerta" class="alerta hidden"></div>
+
+      <div class="form-grid">
+        <div class="campo">
+          <label>Nome *</label>
+          <input type="text" id="nome"/>
+        </div>
+        <div class="campo">
+          <label>Posição *</label>
+          <select id="posicao">
+            <option value="">Selecione</option>
+            <option>Goleiro</option>
+            <option>Zagueiro</option>
+            <option>Lateral</option>
+            <option>Volante</option>
+            <option>Meia</option>
+            <option>Atacante</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Clube *</label>
+          <input type="text" id="clube"/>
+        </div>
+        <div class="campo">
+          <label>País</label>
+          <input type="text" id="pais"/>
+        </div>
+        <div class="campo">
+          <label>Idade</label>
+          <input type="number" id="idade" min="1" max="99"/>
+        </div>
+        <div class="campo">
+          <label>Número da Camisa</label>
+          <input type="number" id="numero" min="1" max="99"/>
+        </div>
+        <div class="campo full">
+          <label>URL da Foto</label>
+          <input type="url" id="foto"/>
+        </div>
+      </div>
+
+      <div class="form-acoes">
+        <a href="index.html" class="btn-voltar">← Cancelar</a>
+        <button id="btnSalvar" onclick="atualizar()">Salvar Alterações</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API    = "/alexandre/catalogo_futebol/Back/";
+    const params = new URLSearchParams(window.location.search);
+    const id     = params.get("id");
+
+    if (!id) window.location.href = "index.html";
+
+    async function carregarDados() {
+      try {
+        const res     = await fetch(`${API}listar.php?id=${id}`);
+        if (!res.ok) throw new Error("Erro " + res.status);
+
+        const jogador = await res.json();
+
+        if (jogador.erro) {
+          alert("Jogador não encontrado.");
+          window.location.href = "index.html";
+          return;
+        }
+
+        document.getElementById("nome").value   = jogador.nome   || "";
+        document.getElementById("clube").value  = jogador.clube  || "";
+        document.getElementById("pais").value   = jogador.pais   || "";
+        document.getElementById("idade").value  = jogador.idade  || "";
+        document.getElementById("numero").value = jogador.numero || "";
+        document.getElementById("foto").value   = jogador.foto   || "";
+
+        const sel = document.getElementById("posicao");
+        for (let opt of sel.options) {
+          if (opt.value === jogador.posicao) { opt.selected = true; break; }
+        }
+
+      } catch (e) {
+        console.error(e);
+        mostrarAlerta("Erro ao carregar dados do jogador.", "erro");
+      }
+    }
+
+    async function atualizar() {
+      const btn = document.getElementById("btnSalvar");
+
+      const campos = {
+        id,
+        nome:    document.getElementById("nome").value.trim(),
+        posicao: document.getElementById("posicao").value,
+        clube:   document.getElementById("clube").value.trim(),
+        pais:    document.getElementById("pais").value.trim(),
+        idade:   document.getElementById("idade").value,
+        numero:  document.getElementById("numero").value,
+        foto:    document.getElementById("foto").value.trim(),
+      };
+
+      if (!campos.nome || !campos.posicao || !campos.clube) {
+        mostrarAlerta("Preencha Nome, Posição e Clube.", "erro");
+        return;
+      }
+
+      btn.disabled    = true;
+      btn.textContent = "Salvando...";
+
+      try {
+        const form = new FormData();
+        Object.entries(campos).forEach(([k, v]) => form.append(k, v));
+
+        const res  = await fetch(`${API}atualizar.php`, { method: "POST", body: form });
+        if (!res.ok) throw new Error("Erro " + res.status);
+
+        const data = await res.json();
+
+        if (data.sucesso) {
+          mostrarAlerta(data.sucesso + " Redirecionando...", "ok");
+          setTimeout(() => window.location.href = "index.html", 1500);
+        } else {
+          mostrarAlerta((data.erro || "Erro desconhecido."), "erro");
+        }
+
+      } catch (e) {
+        console.error(e);
+        mostrarAlerta("Erro ao conectar com o servidor.", "erro");
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = "Salvar Alterações";
+      }
+    }
+
+    function mostrarAlerta(msg, tipo) {
+      const el = document.getElementById("alerta");
+      el.textContent = msg;
+      el.className   = "alerta " + tipo;
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    carregarDados();
+  </script>
+</body>
+</html>
